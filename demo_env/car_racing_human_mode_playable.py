@@ -5,10 +5,6 @@ from leaderboard_util import saveLeaderboardEntry
 if __name__ == "__main__":
 
     agent_name = "Olav" #  <-- set agent name here
-
-    toggle_input_name = True   
-    if toggle_input_name:
-        agent_name = input("Write the agent name:  ").strip()
     
     # Esc to exit, enter to restart
     # Car is controlled with the arrow keys

@@ -132,7 +132,7 @@ class FrozenLakeDQL():
         env.close()
 
         # Save policy
-        torch.save(policy_dqn.state_dict(), "frozen_lake_dql.pt")
+        torch.save(policy_dqn.state_dict(), "DQN/frozen_lake_dql.pt")
 
         # Create new graph 
         plt.figure(1)
@@ -149,7 +149,7 @@ class FrozenLakeDQL():
         plt.plot(epsilon_history)
         
         # Save plots
-        plt.savefig('frozen_lake_dql.png')
+        plt.savefig('DQN/frozen_lake_dql.png')
 
     # Optimize policy network
     def optimize(self, mini_batch, policy_dqn, target_dqn):
@@ -212,7 +212,7 @@ class FrozenLakeDQL():
 
         # Load learned policy
         policy_dqn = DQN(in_states=num_states, h1_nodes=num_states, out_actions=num_actions) 
-        policy_dqn.load_state_dict(torch.load("frozen_lake_dql.pt"))
+        policy_dqn.load_state_dict(torch.load("DQN/frozen_lake_dql.pt"))
         policy_dqn.eval()    # switch model to evaluation mode
 
         print('Policy (trained):')

@@ -1,7 +1,7 @@
 import gymnasium as gym
 
 def run():
-    env = gym.make("CarRacing-v2", render_mode="human")
+    env = gym.make("CarRacing-v3", render_mode="human")
     observation, info = env.reset()
 
     episode_over = False

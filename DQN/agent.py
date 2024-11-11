@@ -63,9 +63,11 @@ class Agent():
         self.optimizer = None                # NN Optimizer. Initialize later.
 
         # Path to Run info
-        self.LOG_FILE   = os.path.join(RUNS_DIR, f'{self.hyperparameter_set}.log')
-        self.MODEL_FILE = os.path.join(RUNS_DIR, f'{self.hyperparameter_set}.pt')
-        self.GRAPH_FILE = os.path.join(RUNS_DIR, f'{self.hyperparameter_set}.png')
+        self.LOG_FILE   = os.path.join(RUNS_DIR, f'{self.hyperparameter_set}2.log')
+        self.MODEL_FILE = os.path.join(RUNS_DIR, f'{self.hyperparameter_set}2.pt')
+        self.GRAPH_FILE = os.path.join(RUNS_DIR, f'{self.hyperparameter_set}2.png')
+
+        print("Is using double dqn: ", self.enable_double_dqn)
 
     def run(self, is_training=True, render=False):
         if is_training:

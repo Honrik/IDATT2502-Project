@@ -34,8 +34,11 @@ def train(n_training_episodes, max_training_steps, start_new_model = False,
           entropy_coeff = 0.00001):
     
     with gym.make("FlappyBird-v0", use_lidar=False) as env:
+        rolling_avg_episodes = 200 # number of recent episodes to average for updating models
+        
         # Load data from prev training runs
         prev_best_score, all_runs_score_history, runs_start_eps, runs_n_episodes = load_plot_data(plt_file_path)
+        prev_best_score = np.mean(all_runs_score_history[-rolling_avg_episodes:])
         best_score = prev_best_score
         print("Prev best score: ", best_score)
         
@@ -43,14 +46,13 @@ def train(n_training_episodes, max_training_steps, start_new_model = False,
         #n_training_episodes = 500 # maximum episodes
         #max_training_steps = 1000000 # maximum timesteps
         
-        rolling_avg_episodes = 100 # number of recent episodes to average for updating models
         #figure_file = 'PPO_v1/plots/flappy_bird.png'
 
         # Hyper params
-        N = 2048 # horizon. Number of steps to run policy before updating models
+        N = 1024 # horizon. Number of steps to run policy before updating models
         batch_size = 32 # low minibatch size seems to give better generalization
-        n_epochs = 4 # number of times to train on the collected data
-        max_episode_len = N # cap episode length, to prevent overfitting
+        n_epochs = 2 # number of times to train on the collected data
+        max_episode_len = 2048 # cap episode length, to prevent overfitting
         
         #alpha = 0.00002 # learning rate
         #policy_clip = 0.15 # epsilon
@@ -114,7 +116,10 @@ def train(n_training_episodes, max_training_steps, start_new_model = False,
             avg_score = np.mean(score_history[-rolling_avg_episodes:])
             
             print('episode', i, 'pipes %.0f' % pipes, 'score %.1f' % score, 'avg score %.1f' % avg_score, 'time_steps', n_steps, 'learning_steps', learn_iters)
-
+            
+            if avg_score < 0.95 * best_score: # break early if large drop in performance
+                break
+            
             if avg_score > best_score:
                 if len(score_history) < rolling_avg_episodes: # skip until enough data for rolling avg
                     continue
@@ -183,7 +188,7 @@ def eval_current_model(n_episodes):
         agent = Agent(n_actions=env.action_space.n, input_dims=env.observation_space.shape, entropy_coeff=0)
         agent.load_models()
         
-        max_score = 0
+        max_pipes = 0
         episode_scores = []
         for ep in range(n_episodes):
             obs, _ = env.reset()
@@ -214,20 +219,27 @@ def eval_current_model(n_episodes):
             episode_scores.append(score)
             
             
-            max_score = max(env_score, max_score)
+            max_pipes = max(env_score, max_pipes)
 
-        print(f"highest number of pipes passed in {n_episodes} eps: {max_score}")
-        return episode_scores
+        mean_score = np.mean(episode_scores)
+        print(f"highest number of pipes passed in {n_episodes} eps: {max_pipes}")
+        print(f"mean score: {mean_score}")
+        return (max_pipes, mean_score, episode_scores)
 
 
 if __name__ == '__main__':
     n_training_runs = 10
     max_episodes = 1000
-    timesteps_per_run = 200000
+    timesteps_per_run = 50000
     start_new_model = False
     
-    backup_dir_char = "d"
-    backup_files = os.listdir("PPO_v1/checkpoints/ppo/backups/" + backup_dir_char)   
+    backup_dir_char = "e"
+    backup_files = None
+    try:
+        backup_files = os.listdir("PPO_v1/checkpoints/ppo/backups/" + backup_dir_char)   
+    except:
+        backup_files = None
+        
     prev_model_runs = 0 if not backup_files else len(backup_files)
         
      
@@ -237,14 +249,13 @@ if __name__ == '__main__':
     figure_file = os.path.join(plot_dir_path, "flappy_bird.png")
     plt_data_file_path = os.path.join(plot_dir_path, "ppo_flappy_bird_plot_data")
     
-    #prev_avg_score = 0 # check for model improvement after run
     prev_avg_score = load_plot_data(plt_data_file_path)[0]
     print(prev_avg_score)
     
     # Hyperparams
-    alpha = 0.00002
+    alpha = 0.00003
     policy_clip = 0.15
-    entropy_coeff = 0.00001
+    entropy_coeff = 0.001
     
     
     for i in range(n_training_runs):
@@ -261,17 +272,18 @@ if __name__ == '__main__':
               entropy_coeff=entropy_coeff)
         start_new_model = False
         
-        if prev_avg_score == new_score:
+        if prev_avg_score == new_score: # IF model average did not improve between runs
             print("\n\nNo model improvement\n")
             alpha = 0.75 * alpha
-            entropy_coeff *= 0.25
+            #entropy_coeff *= 0.25
             print(f"new lr: {alpha} \n")
         else:
+            prev_avg_score == new_score
             try: # eval
                 eval_dir_path = f"PPO_v1/checkpoints/ppo/backups/evals/{backup_dir_char}"
                 Path(eval_dir_path).mkdir(parents=True, exist_ok=True)
-                eval_scores = eval_current_model(50)
-                eval_file_path = f"{eval_dir_path}/{backup_dir_name}_eval_{max(eval_scores):.2f}"
+                max_pipes, mean_score, eval_scores = eval_current_model(100)
+                eval_file_path = f"{eval_dir_path}/{backup_dir_name}_eval_pipes_{max_pipes}_max_score_{max(eval_scores):.2f}_mean_score_{mean_score:.2f}"
             
                 with open(eval_file_path, 'wb') as f:
                     pickle.dump(eval_scores, f)

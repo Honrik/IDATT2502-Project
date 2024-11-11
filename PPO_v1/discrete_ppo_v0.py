@@ -120,7 +120,7 @@ class ActorNetwork(nn.Module):
             T.save(self.state_dict(), file_path)
 
     def load_checkpoint(self):
-        self.load_state_dict(T.load(self.checkpoint_file))
+        self.load_state_dict(T.load(self.checkpoint_file, weights_only=True))
 
 class CriticNetwork(nn.Module):
     """Critic network to evaluate state.
@@ -156,7 +156,7 @@ class CriticNetwork(nn.Module):
             T.save(self.state_dict(), file_path)
 
     def load_checkpoint(self):
-        self.load_state_dict(T.load(self.checkpoint_file))
+        self.load_state_dict(T.load(self.checkpoint_file, weights_only=True))
 
 class Agent:
     def __init__(self, n_actions, input_dims, gamma=0.99, alpha=0.0003, gae_lambda=0.96,

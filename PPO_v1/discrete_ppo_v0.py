@@ -184,9 +184,7 @@ class Agent:
         if not dir_name:
             print("could not save. No directory name was passed")
             return
-        if len(dir_name) != 2:
-            print(f"Directory name must be a string of length 2. You provided: {dir_name}")
-            return
+
             
         print('... saving backup of models ...')
         #backup_dir_path = "PPO_v1/checkpoints/ppo/backups"

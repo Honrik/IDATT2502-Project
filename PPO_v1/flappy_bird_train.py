@@ -39,7 +39,10 @@ def train(n_training_episodes, max_training_steps, start_new_model = False,
         # Load data from prev training runs
         prev_best_score, all_runs_score_history, runs_start_eps, runs_n_episodes = load_plot_data(plt_file_path)
         prev_best_score = np.mean(all_runs_score_history[-rolling_avg_episodes:])
+        prev_best_score -= 0.01 # small offset to enable further improvements if end of buffer has row of perfect scores
         best_score = prev_best_score
+        
+        models_updated = False
         print("Prev best score: ", best_score)
         
         # Setup
@@ -121,10 +124,16 @@ def train(n_training_episodes, max_training_steps, start_new_model = False,
                 break
             
             if avg_score > best_score:
+                # skip if recent scores were bad compared to best rolling avg (prevent saving on bad update)
+                if(np.mean(score_history[-10:]) < best_score):
+                    print("\nbad last few scores, no update\n")
+                    print(f"last few scores: {score_history[-10:]} \n")
+                    continue
                 if len(score_history) < rolling_avg_episodes: # skip until enough data for rolling avg
                     continue
                 
                 agent.save_models()
+                models_updated = True
                     
                 best_score = avg_score
                 
@@ -146,13 +155,13 @@ def train(n_training_episodes, max_training_steps, start_new_model = False,
                 x = [i+1 for i in range(len(score_history))]
                 plot_learning_curve(x, score_history, figure_file)
         
-        if backup_dir_name and (best_score != prev_best_score):
+        if backup_dir_name and models_updated:
             agent.load_models()
             agent.save_models_backup(backup_dir_name, best_avg_score=best_score)
             
         
         env.close()
-        return best_score
+        return models_updated
 
 
 def demo_current_model(n_eps = 1):
@@ -228,9 +237,9 @@ def eval_current_model(n_episodes):
 
 
 if __name__ == '__main__':
-    n_training_runs = 10
+    n_training_runs = 1
     max_episodes = 1000
-    timesteps_per_run = 50000
+    timesteps_per_run = 200000
     start_new_model = False
     
     backup_dir_char = "e"
@@ -249,19 +258,19 @@ if __name__ == '__main__':
     figure_file = os.path.join(plot_dir_path, "flappy_bird.png")
     plt_data_file_path = os.path.join(plot_dir_path, "ppo_flappy_bird_plot_data")
     
-    prev_avg_score = load_plot_data(plt_data_file_path)[0]
-    print(prev_avg_score)
+
     
     # Hyperparams
-    alpha = 0.00003
+    alpha = 0.000004
     policy_clip = 0.15
     entropy_coeff = 0.001
     
-    
+    update_count = 0
     for i in range(n_training_runs):
-        backup_dir_name = backup_dir_char + str(prev_model_runs + i + 1)
+        backup_dir_name = backup_dir_char + str(prev_model_runs + update_count + 1)
+        print(backup_dir_name)
         
-        new_score = train(max_training_steps=timesteps_per_run,
+        modelUpdated = train(max_training_steps=timesteps_per_run,
               n_training_episodes=max_episodes,
               backup_dir_name=backup_dir_name,
               start_new_model=start_new_model,
@@ -272,14 +281,14 @@ if __name__ == '__main__':
               entropy_coeff=entropy_coeff)
         start_new_model = False
         
-        if prev_avg_score == new_score: # IF model average did not improve between runs
+        if not modelUpdated: # IF model average did not improve between runs
             print("\n\nNo model improvement\n")
-            alpha = 0.75 * alpha
+            alpha = 0.75 * alpha # reduce lr
             #entropy_coeff *= 0.25
             print(f"new lr: {alpha} \n")
         else:
-            prev_avg_score == new_score
             try: # eval
+                update_count += 1
                 eval_dir_path = f"PPO_v1/checkpoints/ppo/backups/evals/{backup_dir_char}"
                 Path(eval_dir_path).mkdir(parents=True, exist_ok=True)
                 max_pipes, mean_score, eval_scores = eval_current_model(100)

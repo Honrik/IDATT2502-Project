@@ -206,8 +206,15 @@ class Agent:
         self.actor.load_checkpoint()
         self.critic.load_checkpoint()
 
-    def choose_action(self, observation):
+    def choose_action(self, observation, training=True):
         state = T.tensor(observation, dtype=T.float).to(self.actor.device)
+        
+        if not training:
+            with T.no_grad():
+                dist = self.actor(state)
+                action = dist.sample()
+                return action
+            
 
         dist = self.actor(state)
         value = self.critic(state)

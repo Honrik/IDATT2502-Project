@@ -201,7 +201,7 @@ def eval_current_model(n_episodes):
 
                 # Next action:
                 # (feed the observation to your agent here)
-                action = agent.choose_action(obs)[0]
+                action = agent.choose_action(obs, training=False)
 
                 # Processing:
                 obs, reward, terminated, _, info = env.step(action)

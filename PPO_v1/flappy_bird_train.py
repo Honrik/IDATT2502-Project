@@ -3,7 +3,7 @@ import flappy_bird_gymnasium
 import gymnasium as gym
 import numpy as np
 
-from utils.ppo_utils import plot_learning_curve
+from utils.ppo_utils import plot_learning_curve, load_plot_data, save_plot_data
 from discrete_ppo_v0 import Agent
 
 import pickle
@@ -11,18 +11,7 @@ from pathlib import Path
 import os
 
 
-#plt_file_path = "PPO_v1/plots/ppo_flappy_bird_plot_data_3rd"
-def save_plot_data(best_avg_score, score_history, run_start_ep_arr, run_n_steps_arr, file_path):
-    with open(file_path, 'wb') as f:
-        pickle.dump((best_avg_score, score_history, run_start_ep_arr, run_n_steps_arr), f)
 
-def load_plot_data(file_path):
-    try:
-        with open(file_path, 'rb') as f:
-            data = pickle.load(f)
-            return data[0], data[1], data[2], data[3]
-    except (FileNotFoundError, EOFError):
-        return -100.0, [], [], []
 
 
 def train(n_training_episodes, max_training_steps, start_new_model = False,

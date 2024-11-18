@@ -13,14 +13,11 @@ from ppo_hyperparameters import PPOHyperparameters
 # Source: https://github.com/philtabor/Youtube-Code-Repository/blob/master/ReinforcementLearning/PolicyGradient/PPO/torch/utils.py
 
 # Note:
-# My first attempts had some bugs that I wasn't fully able to solve. Learning was unstable and slow,
-# even after it was rewritten with identical logic and param-values to this implementation.
-
-# To try to identify a cause I have tested incremental changes in the implementation for this model.
-# In doing this, the only noticable change came from using nn.Sequential. This seemingly leads to noticable
-# changes in learning performance, even though it logically does the same as manually passing the outputs between layers.
-# PPO is inherently unpredictable between runs, so it is however difficult to make definite conclusions.
-
+# Some of the code was copied directly after first experiencing the PPO instability issues
+# with my first implementation.
+# This was done in case the instability issues were caused by implementation errors.
+# However, the same issues were experienced after replacing with the original code.
+# The main cause was eventually understood and is explained in the report. (Overfitting on longer episodes)
 class PPOMemory:
     """Data structure for storing transitions for training PPO.
     Usage:
@@ -131,7 +128,7 @@ class CriticNetwork(nn.Module):
     This advantage is then used to update the policy network.
     """
     def __init__(self, input_dims, alpha, fc1_dims=256, fc2_dims=256,
-            chkpt_dir='PPO_v1\checkpoints\ppo'):
+                 chkpt_dir=os.path.join("PPO_v1", "checkpoints", "ppo")):
         super(CriticNetwork, self).__init__()
 
         self.checkpoint_file = os.path.join(chkpt_dir, 'critic_torch_ppo')
@@ -162,8 +159,9 @@ class CriticNetwork(nn.Module):
         self.load_state_dict(T.load(self.checkpoint_file, weights_only=True))
 
 class Agent:
-    def __init__(self, n_actions, input_dims, ppo_params: PPOHyperparameters, gamma=0.99, alpha=0.0003, gae_lambda=0.96,
-            policy_clip=0.2, batch_size=32, n_epochs=10, entropy_coeff=0, chkpt_dir='PPO_v1\checkpoints\ppo'):
+    def __init__(self, n_actions, input_dims,
+                 ppo_params: PPOHyperparameters,
+                 chkpt_dir=os.path.join("PPO_v1", "checkpoints", "ppo")):
         
         
         self.gamma = ppo_params.gamma
@@ -192,7 +190,6 @@ class Agent:
 
             
         print('... saving backup of models ...')
-        #backup_dir_path = "PPO_v1/checkpoints/ppo/backups"
         backup_dir_path = os.path.join("PPO_v1", "checkpoints", "ppo", "backups")
         backup_dir_path = os.path.join(backup_dir_path, dir_name[0])
         backup_dir_path = os.path.join(backup_dir_path, f"{dir_name}_{best_avg_score:.2f}")
@@ -272,7 +269,7 @@ class Agent:
                 critic_loss = (returns-critic_value)**2
                 critic_loss = critic_loss.mean()
                 
-                # try entropy loss to encourage exploration
+                # Implement entropy loss to encourage additional exploration for local optima
                 entropy_loss = dist.entropy().mean()
                 total_loss = actor_loss + 0.5 * critic_loss - self.entropy_coeff * entropy_loss
                 

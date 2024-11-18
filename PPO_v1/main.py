@@ -15,8 +15,8 @@ if __name__ == '__main__':
     
     # Per training-run toggles
     train_model = True # Run training
-    save_eval = True   # Run and save eval (after each training run)
-    run_demo = True    # Run demo          (after each training run)
+    eval_after_train = True   # Run and save eval (after each training run)
+    demo_after_train = True    # Run demo          (after each training run)
     
     n_eval_episodes = 100 # Number of eval episodes to run and save if model improves in training run
     n_demo_episodes = 1 # Number of demo episodes to run after each training run
@@ -85,7 +85,7 @@ if __name__ == '__main__':
             
             print("\nNo model improvement")
             print(f"New learning rate: {ppo_hyperparams.alpha} \n") 
-        elif save_eval:
+        elif eval_after_train:
             # Run evaluation
             eval_data = eval_current_model(n_eval_episodes)
             
@@ -96,7 +96,7 @@ if __name__ == '__main__':
                 print("\n Could not run eval \n")
                                 
         # Render demo episodes of the current model
-        if demo_current_model:    
+        if demo_after_train:    
             demo_current_model(n_eps=n_demo_episodes)
         
         # When starting a new model only the first training run needs to perform setup

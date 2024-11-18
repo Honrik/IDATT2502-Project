@@ -62,6 +62,8 @@ def train(
         n_steps = 0
 
         n_eps_since_plt_update = 0
+        
+        # Training
         for i in range(n_training_episodes):
             if n_steps >= max_training_steps:
                 break
@@ -75,9 +77,7 @@ def train(
                 action, prob, val = agent.choose_action(observation)
                 observation_, reward, terminated, truncated , info = env.step(action)
                 done = terminated or truncated
-                
-                #reward = reward if not terminated else -2.0 # increase punishment for hitting pipe
-                
+                                
                 n_steps += 1
                 score += reward
                 
@@ -107,37 +107,37 @@ def train(
             
             tol = 0.001
             if avg_score > best_score + tol:
-                # skip if recent scores were bad compared to best rolling avg (prevent saving on bad update)
+                # skip if recent scores were bad compared to best avg score (prevent saving on bad update)
                 if(np.mean(score_history[-10:]) < best_score):
                     print("\nbad last few scores, no update")
-                    print(f"last few scores: {score_history[-10:]} \n")
                     continue
-                if len(score_history) < rolling_avg_episodes: # skip until enough data for rolling avg
+                if len(score_history) < rolling_avg_episodes: # No saving until enough stored data for rolling avg
                     continue
                 
                 agent.save_models()
                 models_updated = True
-                    
-                best_score = avg_score
                 
-                # Update saved history and plot
+                best_score = avg_score # Update best score
+                
+                # Update run control data
                 current_run_start_ep = 0 if (len(runs_start_eps) == 0) else runs_start_eps[-1] + runs_n_episodes[-1]
-                
                 runs_start_eps.append(current_run_start_ep)
                 runs_n_episodes.append(n_eps_since_plt_update)
                 
                 print("... saving plot ...")
                 print(f"episodes since last update: {n_eps_since_plt_update}")
+                
+                # Update stored plot data
                 save_plot_data(best_score, score_history, runs_start_eps, runs_n_episodes, plt_file_path)
                 
+                # Reset update-interval counter
                 n_eps_since_plt_update = 0
                 
-                #print(runs_start_eps)
-                #print(runs_n_episodes)
-                
+                # Update saved plot figure
                 x = [i+1 for i in range(len(score_history))]
                 plot_learning_curve(x, score_history, figure_file)
         
+        # Save backups if models were updated
         if backup_dir_name and models_updated:
             agent.load_models()
             agent.save_models_backup(backup_dir_name, best_avg_score=best_score)

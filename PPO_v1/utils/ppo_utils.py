@@ -63,3 +63,17 @@ def save_eval_data(model_name, model_name_version, eval_data):
         print("\n Could not save eval \n")
         print(f"eval dir path: {eval_dir_path}")
         print(f"eval file path: {eval_file_path}")
+        
+def get_plot_paths(model_name,
+                   fig_file_name = "flappy_bird.png",
+                   data_file_name = "ppo_flappy_bird_plot_data"):
+    
+    plot_dir_path = os.path.join("PPO_v1", "plots", model_name)
+    
+    # Make plot directory for model if not exists
+    Path(plot_dir_path).mkdir(parents=True, exist_ok=True)
+    
+    plt_fig_path = os.path.join(plot_dir_path, fig_file_name)
+    plt_data_path = os.path.join(plot_dir_path, data_file_name)
+    
+    return (plt_fig_path, plt_data_path)

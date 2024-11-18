@@ -1,5 +1,6 @@
 # IDATT2502-Project
-The project of Henrik Gulbrandsen Nilsen and Olav Asprem where they explore different reinforcement learning algorithms within this external [flappy bird gymnasium environment](https://github.com/markub3327/flappy-bird-gymnasium). We highly recommend going through the action and state space for this repo, aswell as how the rewards are calculated.
+The project of Henrik Gulbrandsen Nilsen and Olav Asprem where they explore different reinforcement learning algorithms within this external [flappy bird gymnasium environment](https://github.com/markub3327/flappy-bird-gymnasium). We highly recommend going through the action and state space for this repo, aswell as how the rewards are calculated. To view the report written for the class, check it out here: [Exploring Different Reinforcement Learning Algorithms with Flappy Bird](https://github.com/user-attachments/files/17803332/Dokument.maskinlaering.pdf).
+
 
 
 ## Algorithms
@@ -22,6 +23,26 @@ pip install torch
 
 
 ## Results
+### DQN
+The first results of the dqn model:
+
+![old_dqn](https://github.com/user-attachments/assets/771baa6f-d438-48c6-bc9e-c2b22e1433c7)
+
+After tweaking code and hyperparameters, the result got better:
+
+![dqn_flappybird](https://github.com/user-attachments/assets/33d1564f-1911-4701-9743-98a29d10f7d2)
+
+
+### DDQN
+Same story as in the DQN model, where the inital results were not great:
+
+![old_ddqn](https://github.com/user-attachments/assets/6a4d4c02-9ba5-41bd-8180-eb0c738746b7)
+
+After tweaking the code and hyperparameters, the results also got better for the ddqn model:
+
+![ddqn_flappybird](https://github.com/user-attachments/assets/251b6120-b88c-48ff-ab45-759d833b2271)
+
+
 ### PPO
 PPO was trained with an incremental approach using models with different methods. This was necessary due to issues running parallel environments, meaning no mechanism for decorrelation in patterns for longer episodes.
 
@@ -33,6 +54,10 @@ PPO was trained with an incremental approach using models with different methods
 
 Final results show how incremental training of PPO, resulted in a maximum of **1610 pipes!** This is due to PPO having inherent exploration properties from the stochastic policy approach, as opposed methods like DQN which uses hyperparameter-based exploration, using epsilon.
 ![image](https://github.com/user-attachments/assets/f4488ff9-ae65-4543-ab65-b089cb062f7f)
+
+### Comparison
+To compare the algorithms, we preformed a 10-run test. This is the result:
+![results](https://github.com/user-attachments/assets/3f18a1fb-846a-46c6-aa8d-2826a8eaa35e)
 
 
 ## Run demos

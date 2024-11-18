@@ -25,6 +25,7 @@ We recommend running this in a conda environment. <br>Installing the gymnasium e
 conda install python=3.11
 pip install flappy-bird-gymnasium
 pip install torch
+pip install PyYAML
 ```
 
 

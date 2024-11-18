@@ -108,6 +108,8 @@ def eval_current_model(n_episodes):
 
 # For unit testing
 if __name__ == "__main__":
+    print("... Running demo and eval ...")
+    print("To break demo or eval early, interrupt in console: ctrl+c")
+    demo_current_model(1)
     eval_eps = 100
     eval_current_model(eval_eps)
-    demo_current_model(1)

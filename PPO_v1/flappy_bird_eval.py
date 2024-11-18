@@ -108,6 +108,6 @@ def eval_current_model(n_episodes):
 
 # For unit testing
 if __name__ == "__main__":
-    eval_eps = 10
+    eval_eps = 100
     eval_current_model(eval_eps)
     demo_current_model(1)

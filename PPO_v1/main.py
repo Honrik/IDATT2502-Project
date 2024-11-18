@@ -18,7 +18,7 @@ if __name__ == '__main__':
     save_eval = True   # Run and save eval (after each training run)
     run_demo = True    # Run demo          (after each training run)
     
-    n_eval_episodes = 10 # Number of eval episodes to run and save if model improves in training run
+    n_eval_episodes = 100 # Number of eval episodes to run and save if model improves in training run
     n_demo_episodes = 1 # Number of demo episodes to run after each training run
     
     

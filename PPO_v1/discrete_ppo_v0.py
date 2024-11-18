@@ -6,6 +6,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.distributions.categorical import Categorical
 
+from ppo_hyperparameters import PPOHyperparameters
+
 # This PPO implementation is based on an implementation used for
 # solving the cartpole-environment in the old version of OpenAI gym.
 # Source: https://github.com/philtabor/Youtube-Code-Repository/blob/master/ReinforcementLearning/PolicyGradient/PPO/torch/utils.py
@@ -89,7 +91,8 @@ class ActorNetwork(nn.Module):
     get higher probabilites.
     """
     def __init__(self, n_actions, input_dims, alpha,
-            fc1_dims=256, fc2_dims=256, chkpt_dir='PPO_v1\checkpoints\ppo'):
+            fc1_dims=256, fc2_dims=256,
+            chkpt_dir=os.path.join("PPO_v1", "checkpoints", "ppo")):
         super(ActorNetwork, self).__init__()
 
         self.checkpoint_file = os.path.join(chkpt_dir, 'actor_torch_ppo')
@@ -159,18 +162,20 @@ class CriticNetwork(nn.Module):
         self.load_state_dict(T.load(self.checkpoint_file, weights_only=True))
 
 class Agent:
-    def __init__(self, n_actions, input_dims, gamma=0.99, alpha=0.0003, gae_lambda=0.96,
-            policy_clip=0.2, batch_size=64, n_epochs=10, entropy_coeff=0, chkpt_dir='PPO_v1\checkpoints\ppo'):
-        self.gamma = gamma
-        self.policy_clip = policy_clip
-        self.n_epochs = n_epochs
-        self.gae_lambda = gae_lambda
-        self.entropy_coeff = entropy_coeff # testing this
+    def __init__(self, n_actions, input_dims, ppo_params: PPOHyperparameters, gamma=0.99, alpha=0.0003, gae_lambda=0.96,
+            policy_clip=0.2, batch_size=32, n_epochs=10, entropy_coeff=0, chkpt_dir='PPO_v1\checkpoints\ppo'):
+        
+        
+        self.gamma = ppo_params.gamma
+        self.policy_clip = ppo_params.policy_clip
+        self.n_epochs = ppo_params.n_epochs
+        self.gae_lambda = ppo_params.gae_lambda
+        self.entropy_coeff = ppo_params.entropy_coeff
 
-        # make directories and files for models if not exists
-        self.actor = ActorNetwork(n_actions, input_dims, alpha, chkpt_dir=chkpt_dir)
-        self.critic = CriticNetwork(input_dims, alpha, chkpt_dir=chkpt_dir)
-        self.memory = PPOMemory(batch_size)
+        # Create directories and files for models if not exists
+        self.actor = ActorNetwork(n_actions, input_dims, ppo_params.alpha, chkpt_dir=chkpt_dir)
+        self.critic = CriticNetwork(input_dims, ppo_params.alpha, chkpt_dir=chkpt_dir)
+        self.memory = PPOMemory(ppo_params.minibatch_size)
     
     def remember(self, state, action, probs, val, reward, done):
         self.memory.store_memory(state, action, probs, val, reward, done)

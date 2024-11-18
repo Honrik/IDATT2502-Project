@@ -1,13 +1,13 @@
-Requirements:
-Package               Version
---------------------- -----------
-box2d-py              2.3.5
-cloudpickle           3.1.0
-flappy-bird-gymnasium 0.4.0
-glfw                  2.7.0
-gymnasium             1.0.0
-matplotlib            3.9.2
-numpy                 1.26.4
-pandas                2.2.3
-swig                  4.2.1.post0
-torch                 2.5.1
+We recommend running in a seperate environment using something like conda,
+since installing the flappy bird environment can potentially
+overwrite your own versions of numpy or other packages.
+
+Miniconda is sufficient.
+Link miniconda (18/11/2024): https://docs.anaconda.com/miniconda/
+
+Conda environment setup that can run this project:
+#################################
+conda install python=3.11
+pip install flappy-bird-gymnasium
+pip install torch
+#################################

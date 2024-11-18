@@ -2,6 +2,12 @@
 The project of Henrik Gulbrandsen Nilsen and Olav Asprem where they explore different reinforcement learning algorithms within this external [flappy bird gymnasium environment](https://github.com/markub3327/flappy-bird-gymnasium). We highly recommend going through the action and state space for this repo, aswell as how the rewards are calculated. To view the report written for the class, check it out here: [Exploring Different Reinforcement Learning Algorithms with Flappy Bird](https://github.com/user-attachments/files/17803332/Dokument.maskinlaering.pdf).
 
 
+## Sources
+The DQN and DDQN code is based on this [repo](https://github.com/johnnycode8/dqn_pytorch/tree/main) by Johnny Code. He also has an amazing youtube series explaining the basic theory behind DQN and DDQN. 
+The PPO code is based on this [repo](https://github.com/philtabor/Youtube-Code-Repository/tree/master/ReinforcementLearning/PolicyGradient/PPO/torch) by Phil Tabor.
+
+Using the existing code as a good baseline, countless of tests and tweaks have been made in an attempt to optimize the result.
+
 
 ## Algorithms
 There are 3 main algorithms implemented:
@@ -67,8 +73,3 @@ python DQN/agent.py flappybird_dqn
 python DQN/agent.py flappybird_ddqn
 #### PPO
 python PPO_v1/flappy_bird_eval.py
-## Sources
-The DQN and DDQN code is based on this [repo](https://github.com/johnnycode8/dqn_pytorch/tree/main) by Johnny Code. He also has an amazing youtube series explaining the basic theory behind DQN and DDQN. 
-The PPO code is based on this [repo](https://github.com/philtabor/Youtube-Code-Repository/tree/master/ReinforcementLearning/PolicyGradient/PPO/torch) by Phil Tabor.
-
-Using the existing code as a good baseline, countless of tests and tweaks have been made in an attempt to optimize the result.

@@ -28,6 +28,16 @@ pip install torch
 ```
 
 
+## Run demos
+#### DQN
+python DQN/agent.py flappybird_dqn 
+#### DDQN
+python DQN/agent.py flappybird_ddqn
+#### PPO
+python PPO_v1/flappy_bird_eval.py
+
+
+
 ## Results
 ### DQN
 The first results of the dqn model:
@@ -64,12 +74,3 @@ Final results show how incremental training of PPO, resulted in a maximum of **1
 ### Comparison
 To compare the algorithms, we preformed a 10-run test. This is the result:
 ![results](https://github.com/user-attachments/assets/3f18a1fb-846a-46c6-aa8d-2826a8eaa35e)
-
-
-## Run demos
-#### DQN
-python DQN/agent.py flappybird_dqn 
-#### DDQN
-python DQN/agent.py flappybird_ddqn
-#### PPO
-python PPO_v1/flappy_bird_eval.py

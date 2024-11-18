@@ -10,4 +10,5 @@ Conda environment setup that can run this project:
 conda install python=3.11
 pip install flappy-bird-gymnasium
 pip install torch
+pip install PyYAML
 #################################

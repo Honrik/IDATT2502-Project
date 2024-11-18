@@ -1,4 +1,5 @@
 import flappy_bird_gymnasium
+import os
 
 import gymnasium as gym
 import numpy as np
@@ -14,8 +15,8 @@ def train(
           load_current_model = False,
         # Directory names and paths for saving models
           backup_dir_name = None,
-          figure_file = 'PPO_v1/plots/flappy_bird.png',
-          plt_file_path = "PPO_v1/plots/ppo_flappy_bird_plot_data",
+          figure_file = os.path.join("PPO_v1", "plots", "flappy_bird.png"),
+          plt_file_path = os.path.join("PPO_v1", "plots", "ppo_flappy_bird_plot_data"),
         # PPO hyperparameters
           ppo_params: PPOHyperparameters = None,
         # Implementation parameters 

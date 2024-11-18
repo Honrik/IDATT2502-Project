@@ -70,6 +70,7 @@ PPO was trained with an incremental approach using models with different methods
 ![image](https://github.com/user-attachments/assets/1a71bc12-8756-4c7e-8229-a7aeeb9fd8a6)
 
 Final results show how incremental training of PPO, resulted in a maximum of **1610 pipes!** This is due to PPO having inherent exploration properties from the stochastic policy approach, as opposed methods like DQN which uses hyperparameter-based exploration, using epsilon.
+
 ![image](https://github.com/user-attachments/assets/f4488ff9-ae65-4543-ab65-b089cb062f7f)
 
 ### Comparison
